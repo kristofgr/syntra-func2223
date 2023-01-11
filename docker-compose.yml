@@ -1,16 +1,25 @@
-version: '3.1'
+version: '3.8'
 
 services:
-  www:
-    build: .
+
+  nginx:
+    image: nginx:1.21
     ports:
-      - "8001:80"
+      - 80:80
     volumes:
-      - ./:/var/www/html/
-    networks:
-      - default
-    links:
+      - ./php:/var/www/php
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - php
+
+  php:
+    build: ./.docker/php
+    working_dir: /var/www/php
+    volumes:
+      - ./php:/var/www/php
+    depends_on:
       - db
+
   db:
     image: mysql:latest
     ports:
